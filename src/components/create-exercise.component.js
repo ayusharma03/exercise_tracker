@@ -1,17 +1,17 @@
 import { Component } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import axios from "axios";
 
 export default class CreateExercise extends Component{
-
-    onchangeUsername = this.onchangeUsername.bind(this);
-    onchangeDescription = this.onchangeDescription.bind(this);
-    onchangeDuration = this.onchangeDuration.bind(this);
-    onchangeDate = this.onchangeDate.bind(this);
-    onSubmit = this.onSubmit.bind(this);
-    
     constructor(props){
         super(props);
+
+        this.onchangeUsername = this.onchangeUsername.bind(this);
+        this.onchangeDescription = this.onchangeDescription.bind(this);
+        this.onchangeDuration = this.onchangeDuration.bind(this);
+        this.onchangeDate = this.onchangeDate.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
 
         this.state = {
             username: '',
@@ -20,6 +20,19 @@ export default class CreateExercise extends Component{
             date: new Date(),
             users: []
         }
+    }
+
+    
+    componentDidMount(){
+        axios.get('http://localhost:5000/users/')
+        .then(res => {
+            if(res.data.length > 0){
+                this.setState({
+                    users: res.data.map(user => user.username),
+                    username: res.data[0].username
+                })
+            }
+        })
     }
     onchangeUsername(e){
         this.setState({
@@ -50,7 +63,10 @@ export default class CreateExercise extends Component{
             date: this.state.date
         }
         console.log(exercise);
+        axios.post('http://localhost:5000/exercises/add', exercise)
+            .then(res => console.log(res.data));
         window.location = '/';
+
     }
     
     render(){
@@ -103,7 +119,14 @@ export default class CreateExercise extends Component{
                         </div>
                     </div>
                     <div className="form-group" style={{ paddingTop: "10px" }}>
-                        <input type="submit" value="Create Exercise Log" className="btn btn-primary" style={{paddingInline: 10,width: "100%"}}/>
+                        <input  
+                        type="submit"
+                        value="Create Exercise Log" 
+                        className="btn btn-primary" 
+                        style={{paddingInline: 10,width: "100%", background: 
+                        "radial-gradient(circle, rgb(120, 201, 216) 40%, rgb(47, 73, 107) 80%)",
+
+                        }}/>
                     </div>
                 </form>
             </div>
